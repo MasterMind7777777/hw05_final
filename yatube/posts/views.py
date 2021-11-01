@@ -4,6 +4,7 @@ from .forms import PostForm, CommentForm
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 
 
 def paginator_my(request, post_list):
@@ -16,6 +17,9 @@ def paginator_my(request, post_list):
 def index(request):
     post_list = Post.objects.all()
     page_obj = paginator_my(request, post_list)
+    print(len(request.GET) != 0)
+    if len(request.GET) != 0:
+        cache.clear()
     context = {
         'page_obj': page_obj,
     }
@@ -131,9 +135,15 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    # информация о текущем пользователе доступна в переменной request.user
-    # ...
-    context = {}
+    follow_set = Follow.objects.filter(user=request.user)
+    authors = []
+    for author in follow_set:
+        authors.append(author.author)
+    post_list = Post.objects.filter(author__in=authors)
+    page_obj = paginator_my(request, post_list)
+    context = {
+        'page_obj': page_obj,
+    }
     return render(request, 'posts/follow.html', context)
 
 
@@ -149,5 +159,5 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     if request.user != author:
-        Follow.objects.get_or_create(user=request.user, author=author).delete()
+        Follow.objects.get(user=request.user, author=author).delete()
     return redirect('posts:profile', username)

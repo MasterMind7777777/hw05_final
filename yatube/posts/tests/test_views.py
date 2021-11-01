@@ -237,34 +237,6 @@ class PostPagesTests(TestCase):
         self.assertIsNot(
             post_img_0.name, '', 'Картинка не появилась в детальном виде')
 
-    # def test_index_page_cache(self):
-    #     """Кэш хранится коректно"""
-    #     new_post = Post.objects.create(
-    #         author=self.user,
-    #         group=self.group,
-    #         text='Тестовый пост для проверки кеша',
-    #     )
-    #     response = self.guest_client.get(reverse('posts:index'))
-    #     self.assertIn(
-    #         new_post,
-    #         response.context['page_obj'].object_list,
-    #         'Пост из БД не отображается на странице'
-    #     )
-    #     new_post.delete()
-    #     response2 = self.guest_client.get(reverse('posts:index'))
-    #     self.assertEqual(
-    #         response.content,
-    #         response2.content,
-    #         'Пост из кеша не отображается в контенте страницы'
-    #     )
-    #     cache.clear()
-    #     response3 = self.guest_client.get(reverse('posts:index'))
-    #     self.assertNotEqual(
-    #         response2.content,
-    #         response3.content,
-    #         'Пост из кеша не удалился из контента страницы'
-    #     )
-
 
 class CacheViwesTest(TestCase):
     ''' При удалении записи из базы, она остаётся в response.content главной

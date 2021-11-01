@@ -4,17 +4,17 @@
 {% block title %} Последние обновления на сайте {% endblock %}
   {% block content %}
   {% cache 20 index_page %}
-  <!-- класс py-5 создает отступы сверху и снизу блока -->
-  <div class="container py-5">
-    {% include 'posts/includes/switcher.html' %}
-    {% for post in page_obj  %}
-      {% include 'includes/post_body.html' %}
-      {% if post.group %}
-        <a href="{% url 'posts:group_posts' post.group.slug %}">все записи группы</a>
-      {% endif%}
-      {% if not forloop.last %}<hr>{% endif %}
-    {% endfor %} 
-    {% include 'posts/includes/paginator.html' %}
-  </div> 
+    <!-- класс py-5 создает отступы сверху и снизу блока -->
+    <div class="container py-5">
+      {% include 'posts/includes/switcher.html' %}
+      {% for post in page_obj  %}
+        {% include 'includes/post_body.html' %}
+        {% if post.group %}
+          <a href="{% url 'posts:group_posts' post.group.slug %}">все записи группы</a>
+        {% endif%}
+        {% if not forloop.last %}<hr>{% endif %}
+      {% endfor %} 
+      {% include 'posts/includes/paginator.html' %}
+    </div> 
   {% endcache %} 
   {% endblock %}
