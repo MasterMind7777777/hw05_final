@@ -17,7 +17,6 @@ def paginator_my(request, post_list):
 def index(request):
     post_list = Post.objects.all()
     page_obj = paginator_my(request, post_list)
-    print(len(request.GET) != 0)
     if len(request.GET) != 0:
         cache.clear()
     context = {
@@ -135,11 +134,7 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    follow_set = Follow.objects.filter(user=request.user)
-    authors = []
-    for author in follow_set:
-        authors.append(author.author)
-    post_list = Post.objects.filter(author__in=authors)
+    post_list = Post.objects.filter(author__following__user=request.user)
     page_obj = paginator_my(request, post_list)
     context = {
         'page_obj': page_obj,
@@ -159,5 +154,5 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     if request.user != author:
-        Follow.objects.get(user=request.user, author=author).delete()
+        Follow.objects.filter(user=request.user, author=author).delete()
     return redirect('posts:profile', username)

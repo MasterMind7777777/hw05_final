@@ -39,7 +39,7 @@ class PostFormTests(TestCase):
 
     def test_only_subscriptions_on_subpage(self):
         self.authorized_client_sub.get(
-            reverse('posts:profile_follow', kwargs={'username': 'usr_sub'}))
+            reverse('posts:profile_follow', kwargs={'username': 'usr_nonsub'}))
 
         follow_index_sub = self.authorized_client_sub.get(
             reverse('posts:follow_index')
@@ -47,9 +47,23 @@ class PostFormTests(TestCase):
         follow_index_nonsub = self.authorized_client_nonsub.get(
             reverse('posts:follow_index')
         )
-
         self.assertIsNotNone(
             follow_index_sub, 'Ползователю не выводятся его подписки')
         self.assertIsNotNone(
             follow_index_nonsub,
             'Ползователю выводятся посты на которые он не подписан')
+
+    def test_unsubscribe(self):
+        self.authorized_client_nonsub.get(
+            reverse('posts:profile_follow', kwargs={'username': 'usr_sub'}))
+
+        self.assertTrue(Follow.objects.filter(
+            user=self.usr_nonsub, author=self.usr_sub
+        ).exists)
+
+        self.authorized_client_nonsub.get(
+            reverse('posts:profile_unfollow', kwargs={'username': 'usr_sub'}))
+
+        self.assertEqual(len(Follow.objects.filter(
+            user=self.usr_nonsub, author=self.usr_sub
+        )), 0)
